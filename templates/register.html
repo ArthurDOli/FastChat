@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Creation</title>
+  </head>
+  <body>
+    <h1>Account Creation</h1>
+    <form action="/auth/register" method="post">
+      <div>
+        <label for="username">Username:</label><br />
+        <input type="text" id="username" name="username" required />
+      </div>
+      <br />
+      <div>
+        <label for="email">E-mail:</label><br />
+        <input type="email" id="email" name="email" required />
+      </div>
+      <br />
+      <div>
+        <label for="password">Password:</label><br />
+        <input type="password" id="password" name="password" required />
+      </div>
+      <br />
+      <button type="submit">Create Account</button>
+    </form>
+  </body>
+</html>
