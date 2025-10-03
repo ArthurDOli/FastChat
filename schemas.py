@@ -6,3 +6,10 @@ class UserBase(BaseModel):
     password: str
     class Config:
         from_attributes = True
+
+class UserPublic(BaseModel):
+    id: int
+    username: str
+    email: str
+    class Config:
+        from_attributes = True
