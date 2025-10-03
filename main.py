@@ -1,3 +1,5 @@
+# uvicorn main:app --reload
+
 from fastapi import FastAPI
 from auth import auth_router
 
