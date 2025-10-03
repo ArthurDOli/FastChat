@@ -1,12 +1,12 @@
-from fastapi.templating import Jinja2Templates
+from security import create_access_token, get_current_user, create_refresh_token, get_user_from_refresh_token
 from fastapi import APIRouter, Request, Depends, HTTPException, status, Form
+from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
-from models import User
 from schemas import UserBase, UserPublic
 from sqlalchemy.orm import Session
 from database import getSession
+from models import User
 import bcrypt
-from security import create_access_token, get_current_user
 
 auth_router = APIRouter(prefix='/auth', tags=['Authentication'])
 templates = Jinja2Templates(directory='templates')
@@ -68,7 +68,12 @@ async def login(
     if not user or not bcrypt.checkpw(password.encode(), user.hashed_password.encode()):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="E-mail ou senha incorretos")
     access_token = create_access_token(data={'sub': user.email})
-    return {'access_token': access_token, 'token_type': 'bearer'}
+    refresh_token = create_refresh_token(data={'sub': user.email})
+    return {
+        'access_token': access_token, 
+        'refresh_token': refresh_token,
+        'token_type': 'bearer'
+        }
 
 @auth_router.get('/login', tags=['Authentication'])
 async def login_page(request: Request):
@@ -76,3 +81,11 @@ async def login_page(request: Request):
     Essa rota apenas mostra a página HTML com o formulário de login
     """
     return templates.TemplateResponse('login.html', context={"request": request})
+
+@auth_router.post('/refresh', tags=['Authentication'])
+async def refresh_token(current_user: User = Depends(get_user_from_refresh_token)):
+    """
+    Recebe um refresh token e retorna um novo access token.
+    """
+    new_access_token = create_access_token(data={'sub': current_user.email})
+    return {'access_token': new_access_token, 'token_type': 'bearer'}
