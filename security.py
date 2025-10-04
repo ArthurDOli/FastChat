@@ -4,7 +4,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from dotenv import load_dotenv
 import os
-from fastapi.security import OAuth2PasswordBearer, HTTPBearer
+from fastapi.security import OAuth2PasswordBearer, HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from database import getSession
@@ -35,8 +35,8 @@ def create_refresh_token(data: dict):
     expire = datetime.now(timezone.utc) + timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
     to_encode = data.copy()
     to_encode.update({"exp": expire})
-    encode_jwt = jwt.encode(to_encode, REFRESH_SECRET_KEY, algorithm=ALGORITHM)
-    return encode_jwt
+    encoded_jwt = jwt.encode(to_encode, REFRESH_SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
 def get_current_user(token: str = Depends(oauth2_scheme), session: Session = Depends(getSession)):
     """
@@ -59,7 +59,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), session: Session = Dep
         raise credential_exception
     return user
 
-def get_user_from_refresh_token(token: str = Depends(refresh_scheme), session: Session = Depends(getSession)):
+def get_user_from_refresh_token(token: HTTPAuthorizationCredentials = Depends(refresh_scheme), session: Session = Depends(getSession)):
     credentials = token.credentials
     credential_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
