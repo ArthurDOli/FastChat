@@ -1,35 +1,109 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>FastChat</title>
+    <title>FastChat Autenticado</title>
   </head>
   <body>
-    <h1>FastChat</h1>
-    <h2>Seu ID: <span id="ws-id"></span></h2>
-    <form action="" onsubmit="sendMessage(event)">
-      <input type="text" id="messageText" autocomplete="off" />
-      <button>Enviar</button>
-    </form>
-    <ul id="messages"></ul>
+    <div id="login-section">
+      <h2>Login para Acessar o Chat</h2>
+      <form action="" onsubmit="login(event)">
+        <input
+          type="email"
+          id="email"
+          placeholder="Seu e-mail"
+          required
+        /><br />
+        <input
+          type="password"
+          id="password"
+          placeholder="Sua senha"
+          required
+        /><br />
+        <button type="submit">Entrar</button>
+      </form>
+    </div>
+
+    <div id="chat-section" style="display: none">
+      <h1>FastChat</h1>
+      <h2 id="welcome-message"></h2>
+      <form action="" onsubmit="sendMessage(event)">
+        <input type="text" id="messageText" autocomplete="off" />
+        <button>Enviar</button>
+      </form>
+      <ul id="messages"></ul>
+    </div>
+
     <script>
-      var client_id = Date.now();
-      document.querySelector("#ws-id").textContent = client_id;
+      let ws = null;
 
-      var ws = new WebSocket(`ws://localhost:8000/chat/ws/${client_id}`);
+      async function login(event) {
+        event.preventDefault();
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
-      ws.onmessage = function (event) {
-        var messages = document.getElementById("messages");
-        var message = document.createElement("li");
-        var content = document.createTextNode(event.data);
-        message.appendChild(content);
-        messages.appendChild(message);
-      };
+        const formData = new FormData();
+        formData.append("username", email);
+        formData.append("password", password);
+
+        const response = await fetch("/auth/login", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem("access_token", data.access_token);
+
+          document.getElementById("login-section").style.display = "none";
+          document.getElementById("chat-section").style.display = "block";
+
+          connectToChat();
+        } else {
+          alert("Login falhou. Verifique suas credenciais.");
+        }
+      }
+
+      function connectToChat() {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+          alert("Token não encontrado. Faça login primeiro.");
+          return;
+        }
+
+        ws = new WebSocket(`ws://localhost:8000/chat/ws?token=${token}`);
+
+        ws.onopen = function () {
+          fetch("/auth/users/me", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              document.getElementById(
+                "welcome-message"
+              ).textContent = `Bem-vindo, ${data.username}!`;
+            });
+        };
+
+        ws.onmessage = function (event) {
+          const messageData = JSON.parse(event.data);
+          const messages = document.getElementById("messages");
+          const message = document.createElement("li");
+
+          const content = document.createTextNode(
+            `${messageData.sender}: ${messageData.message}`
+          );
+
+          message.appendChild(content);
+          messages.appendChild(message);
+        };
+      }
 
       function sendMessage(event) {
-        var input = document.getElementById("messageText");
-        ws.send(input.value);
-        input.value = "";
         event.preventDefault();
+        const input = document.getElementById("messageText");
+        const messageToSend = { text: input.value };
+        ws.send(JSON.stringify(messageToSend));
+        input.value = "";
       }
     </script>
   </body>
