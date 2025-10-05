@@ -73,18 +73,18 @@ Siga os passos abaixo para configurar e executar o projeto localmente:
 
 ```bash
 /FastChat
-|-- /static/
-|   |-- logo.png
-|-- /templates/
-|   |-- chat.html
-|   |-- register.html
-|-- .env
-|-- .gitignore
-|-- auth.py
-|-- chat.py
-|-- database.py
-|-- main.py
-|-- models.py
-|-- schemas.py
-`-- ws_manager.py
+├── /static/
+|   └── logo.png
+├── /templates/
+|   ├── chat.html
+|   └── register.html
+├── .env
+├── .gitignore
+├── auth.py
+├── chat.py
+├── database.py
+├── main.py
+├── models.py
+├── schemas.py
+└── ws_manager.py
 ```

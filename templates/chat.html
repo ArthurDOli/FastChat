@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,19 +21,19 @@
         <form action="" onsubmit="login(event)">
           <div class="mb-4">
             <label for="email" class="block mb-2 text-sm font-medium"
-              >Seu e-mail</label
+              >Your e-mail</label
             >
             <input
               type="email"
               id="email"
               class="bg-purple-800 border border-purple-600 text-white text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5"
-              placeholder="voce@email.com"
+              placeholder="you@email.com"
               required
             />
           </div>
           <div class="mb-6">
             <label for="password" class="block mb-2 text-sm font-medium"
-              >Sua senha</label
+              >Your password</label
             >
             <input
               type="password"
@@ -46,16 +46,16 @@
             type="submit"
             class="w-full text-white bg-purple-700 hover:bg-purple-600 focus:ring-4 focus:outline-none focus:ring-purple-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
           >
-            Entrar
+            Enter
           </button>
         </form>
         <p class="mt-4 text-center text-sm text-gray-400">
-          Não tem uma conta?
+          Dont have an account?
           <a
             href="/auth/register"
             class="font-medium text-purple-400 hover:underline"
           >
-            Cadastre-se
+            Register
           </a>
         </p>
       </div>
@@ -84,14 +84,14 @@
             type="text"
             id="messageText"
             class="flex-grow bg-purple-800 border-none rounded-full px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            placeholder="Digite sua mensagem..."
+            placeholder="Write your message..."
             autocomplete="off"
           />
           <button
             type="submit"
             class="ml-4 bg-purple-600 hover:bg-purple-500 rounded-full px-6 py-2 text-white font-semibold"
           >
-            Enviar
+            Send
           </button>
         </form>
       </footer>
@@ -119,18 +119,18 @@
           localStorage.setItem("access_token", data.access_token);
 
           document.getElementById("login-section").style.display = "none";
-          document.getElementById("chat-section").style.display = "block";
+          document.getElementById("chat-section").style.display = "flex";
 
           connectToChat();
         } else {
-          alert("Login falhou. Verifique suas credenciais.");
+          alert("Login failed. Check your credentials.");
         }
       }
 
       function connectToChat() {
         const token = localStorage.getItem("access_token");
         if (!token) {
-          alert("Token não encontrado. Faça login primeiro.");
+          alert("Token not found. Please log in first.");
           return;
         }
 
@@ -144,7 +144,7 @@
             .then((data) => {
               document.getElementById(
                 "welcome-message"
-              ).textContent = `Bem-vindo, ${data.username}!`;
+              ).textContent = `Welcome, ${data.username}!`;
             });
         };
 
@@ -197,7 +197,7 @@
 
       if (localStorage.getItem("access_token")) {
         document.getElementById("login-section").style.display = "none";
-        document.getElementById("chat-section").style.display = "block";
+        document.getElementById("chat-section").style.display = "flex";
         connectToChat();
       }
     </script>

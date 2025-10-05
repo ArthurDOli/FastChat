@@ -15,11 +15,11 @@ async def get_chat_page(request: Request):
 async def chat_websocket(websocket: WebSocket, current_user: User = Depends(get_current_user_from_websocket)):
     username = current_user.username
     await manager.connect(websocket, username)
-    await manager.broadcast_to_others({"sender": "System", "message": f"Usuário '{username}' entrou no chat"}, username)
+    await manager.broadcast_to_others({"sender": "System", "message": f"User '{username}' has joined the chat."}, username)
     try:
         while True:
             data = await websocket.receive_json()
             await manager.broadcast({"sender": username, "message": data['text']})
     except WebSocketDisconnect:
         manager.disconnect(websocket)
-        await manager.broadcast_to_others({"sender": "System", "message": f"Usuário '{username}' saiu do chat"}, username)
+        await manager.broadcast_to_others({"sender": "System", "message": f"User '{username}' left the chat"}, username)
