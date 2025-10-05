@@ -43,7 +43,7 @@ async def create_account(
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
-    return RedirectResponse(url='/auth/login', status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url='/chat', status_code=status.HTTP_303_SEE_OTHER)
 
 @auth_router.get('/register', tags=['Authentication'])
 async def create_account_page(request: Request):
@@ -74,13 +74,6 @@ async def login(
         'refresh_token': refresh_token,
         'token_type': 'bearer'
         }
-
-@auth_router.get('/login', tags=['Authentication'])
-async def login_page(request: Request):
-    """
-    Essa rota apenas mostra a página HTML com o formulário de login
-    """
-    return templates.TemplateResponse('login.html', context={"request": request})
 
 @auth_router.post('/refresh', tags=['Authentication'])
 async def refresh_token(current_user: User = Depends(get_user_from_refresh_token)):
