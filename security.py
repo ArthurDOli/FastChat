@@ -1,13 +1,12 @@
-from datetime import datetime, timedelta, timezone
-from typing import Optional
-from jose import JWTError, jwt
-from dotenv import load_dotenv
-import os
 from fastapi.security import OAuth2PasswordBearer, HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Depends, HTTPException, status, Query
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 from database import getSession
+from jose import JWTError, jwt
+from dotenv import load_dotenv
 from models import User
+import os
 
 load_dotenv()
 
